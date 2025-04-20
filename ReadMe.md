@@ -10,18 +10,20 @@ Python, Django
 
 # Project setup
 ## Creating a virtual environment for the project to tackle depedencies
-python -m venv env
-source env/bin/activate   # on Linux/Mac
+```python -m venv env```
+```source env/bin/activate```   # on Linux/Mac
 ## Installing Django
-pip install django
+```pip install django```
 ## Creating a Django project
-django-admin startproject umessage
+```django-admin startproject umessage```
 ## Starting the project
-python manage.py runserver
+```python manage.py runserver```
 ## Create an app in the Django project
-- python manage.py startapp exampleApp
+- ```python manage.py startapp exampleApp```
 - Modify : umessage/settings.py
+```python
 INSTALLED_APPS = [
     ...
     'exampleApp',
 ]
+```
