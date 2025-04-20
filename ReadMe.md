@@ -9,6 +9,7 @@ A webapp for uni student networks or alumni networks to discuss globally with al
 Python, Django
 
 # Project setup
+## Django
 ### Creating a virtual environment for the project to tackle depedencies
 - ```python -m venv env```
 - ```source env/bin/activate   # on Linux/Mac```
@@ -27,3 +28,6 @@ INSTALLED_APPS = [
     'exampleApp',
 ]
 ```
+## Depedencies
+### Tailwind-css
+pip install django-tailwind
