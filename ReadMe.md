@@ -1,24 +1,24 @@
 # Project Description
-## Goal
+### Goal
 A webapp for uni student networks or alumni networks to discuss globally with all the community, but without the spam. 
-## Caracteristics
+### Caracteristics
 - Classic messaging system
 - User rotation to send messages, to avoid spam
 - Limiting sending message to 1 message per month
-## Stacks :
+### Stacks :
 Python, Django
 
 # Project setup
-## Creating a virtual environment for the project to tackle depedencies
+### Creating a virtual environment for the project to tackle depedencies
 - ```python -m venv env```
 - ```source env/bin/activate   # on Linux/Mac```
-## Installing Django
+### Installing Django
 ```pip install django```
-## Creating a Django project
+### Creating a Django project
 ```django-admin startproject umessage```
-## Starting the project
+### Starting the project
 ```python manage.py runserver```
-## Create an app in the Django project
+### Create an app in the Django project
 - ```python manage.py startapp exampleApp```
 - Modify : umessage/settings.py
 ```python
