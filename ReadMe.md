@@ -29,5 +29,8 @@ INSTALLED_APPS = [
 ]
 ```
 ## Depedencies
-### Tailwind-css
-pip install django-tailwind
+### Installing Tailwind-css
+```pip install django-tailwind```
+doc : https://django-tailwind.readthedocs.io/en/latest/installation.html
+### Launching Tailwind-css
+```python manage.py tailwind start```
