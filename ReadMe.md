@@ -9,3 +9,19 @@ A webapp for uni student networks or alumni networks to discuss globally with al
 Python, Django
 
 # Project setup
+## Creating a virtual environment for the project to tackle depedencies
+python -m venv env
+source env/bin/activate   # on Linux/Mac
+## Installing Django
+pip install django
+## Creating a Django project
+django-admin startproject umessage
+## Starting the project
+python manage.py runserver
+## Create an app in the Django project
+- python manage.py startapp exampleApp
+- Modify : umessage/settings.py
+INSTALLED_APPS = [
+    ...
+    'exampleApp',
+]
