@@ -10,8 +10,8 @@ Python, Django
 
 # Project setup
 ## Creating a virtual environment for the project to tackle depedencies
-```python -m venv env```
-```source env/bin/activate```   # on Linux/Mac
+- ```python -m venv env```
+- ```source env/bin/activate   # on Linux/Mac```
 ## Installing Django
 ```pip install django```
 ## Creating a Django project
