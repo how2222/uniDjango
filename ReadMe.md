@@ -5,7 +5,8 @@ A webapp for trading projections
 - A dashboard with market summary
 - A projection generator for each stock
 ### Stacks :
-Python, Django
+Python, javascript, html, css
+Django
 
 # Project setup
 ## Django

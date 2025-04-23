@@ -15,7 +15,14 @@
    <!-- Page content -->
   <div class="container mx-auto">
     <section class="flex items-center justify-center h-screen">
-      <h1 class="text-5xl">body</h1>
+        <form method="post" class="text-center space-y-4">
+            {% csrf_token %}
+            <label class="block text-xl font-semibold" for="symbol">Enter the index:</label>
+            <input type="text" name="symbol" id="symbol" placeholder="ex: ^FCHI" class="p-2 border rounded w-1/2">
+            <br>
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Afficher le graphique</button>
+          </form>
+          
     </section>
   </div>
 
