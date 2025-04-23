@@ -1,10 +1,9 @@
 # Project Description
 ### Goal
-A webapp for uni student networks or alumni networks to discuss globally with all the community, but without the spam. 
+A webapp for trading projections 
 ### Caracteristics
-- Classic messaging system
-- User rotation to send messages, to avoid spam
-- Limiting sending message to 1 message per month
+- A dashboard with market summary
+- A projection generator for each stock
 ### Stacks :
 Python, Django
 
@@ -28,7 +27,7 @@ INSTALLED_APPS = [
     'exampleApp',
 ]
 ```
-## Depedencies
+## Dependencies
 ### Installing Tailwind-css
 ```pip install django-tailwind```
 doc : https://django-tailwind.readthedocs.io/en/latest/installation.html
@@ -36,3 +35,7 @@ doc : https://django-tailwind.readthedocs.io/en/latest/installation.html
 ```python manage.py tailwind start```
 ### Library for icons
 lucide.dev
+
+# Project tips
+## Chenge the name of an app
+```mv past_name new_name```
