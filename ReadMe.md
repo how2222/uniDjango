@@ -34,3 +34,5 @@ INSTALLED_APPS = [
 doc : https://django-tailwind.readthedocs.io/en/latest/installation.html
 ### Launching Tailwind-css
 ```python manage.py tailwind start```
+### Library for icons
+lucide.dev
