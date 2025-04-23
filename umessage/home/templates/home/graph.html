@@ -1,0 +1,57 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Graphique {{ symbol }}</title>
+  {% tailwind_css %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-50 font-serif">
+  {% include "home/navbar.html" %}
+
+  <div class="container mx-auto p-4">
+    <h2 class="text-3xl mb-4">Graphique de {{ symbol }}</h2>
+    <canvas id="stockChart" width="600" height="400"></canvas>
+  </div>
+
+  <script>
+    const chartData = JSON.parse('{{ chart_data|escapejs }}');
+
+    const ctx = document.getElementById('stockChart').getContext('2d');
+    const stockChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.dates,
+            datasets: [{
+                label: 'Prix de clôture',
+                data: chartData.prices,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: false,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                },
+                y: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Prix'
+                    }
+                }
+            }
+        }
+    });
+  </script>
+</body>
+</html>
