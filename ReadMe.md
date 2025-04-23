@@ -35,6 +35,9 @@ doc : https://django-tailwind.readthedocs.io/en/latest/installation.html
 ```python manage.py tailwind start```
 ### Library for icons
 lucide.dev
+### Yahoo finance
+pip install yfinance
+
 
 # Project tips
 ## Chenge the name of an app
