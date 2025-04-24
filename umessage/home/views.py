@@ -17,7 +17,7 @@ def index(request):
     return render(request, 'home/index.html')
 def graph(request):
     symbol = request.GET.get('symbol')
-    period = request.GET.get('period', '30')
+    period = request.GET.get('period')
     period_unit = request.GET.get('period_unit', 'days')
     
     print(f"Symbol reçu: {symbol}, Période: {period} {period_unit}")
@@ -32,13 +32,12 @@ def graph(request):
             if period_unit == 'hours':
                 start_date = end_date - datetime.timedelta(hours=period_value)
                 interval = '1h'
-                print(f"Mode horaire: intervalle = {interval}")
-            else:
+            if period_unit == 'minutes':
+                start_date = end_date - datetime.timedelta(minutes=period_value)
+                interval = '1m'
+            elif period_unit == 'days':
                 start_date = end_date - datetime.timedelta(days=period_value)
-                interval = '1d' 
-                
-            print("Recherche de données pour", symbol, "du", start_date, "au", end_date)
-            
+                interval = '1d'            
             
             data = yf.download(symbol, start=start_date, end=end_date, interval=interval)
             ticker = yf.Ticker(symbol)
@@ -50,7 +49,12 @@ def graph(request):
             print("Données vides?", data.empty)
             
             if not data.empty and 'Close' in data.columns:
-                date_format = '%Y-%m-%d %H:%M' if period_unit == 'hours' else '%Y-%m-%d'
+                if interval =='1m':
+                    date_format = '%Y-%m-%d %H:%M:%S'
+                elif interval == '1h':
+                    date_format = '%Y-%m-%d %H:%M'
+                else:
+                    date_format = '%Y-%m-%d'
                 
                 chart_data = {
                     'dates': data.index.strftime(date_format).tolist(),

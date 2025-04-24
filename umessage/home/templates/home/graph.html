@@ -6,6 +6,8 @@
   <title>Graph {{ symbol }} - {{ period }} {{ period_unit }}</title>
   {% tailwind_css %}
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0/dist/chartjs-plugin-zoom.min.js"></script>
 </head>
 <body class="bg-gray-50 font-serif">
   <div class="container mx-auto p-4">
@@ -35,17 +37,85 @@
                 borderColor: 'rgba(75, 192, 192, 1)',
                 borderWidth: 2,
                 fill: false,
-                tension: 0.1
+                tension: 0.1,
+                pointRadius: 0,
             }]
         },
         options: {
             responsive: true,
+            interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+            plugins: {
+              zoom: {
+                zoom: {
+                    wheel: {
+                        enabled: true,
+                        modifierKey: 'ctrl'
+                    },
+                    pinch: {
+                        enabled: true
+                    },
+                    mode: 'xy',
+                    speed: 0.1
+                },
+                pan: {
+                    enabled: true,
+                    mode: 'xy',
+                    speed: 10,
+                }
+            },
+              tooltip: {
+                  enabled: true,
+                  mode: 'index',
+                  intersect: false,
+                  position: 'nearest'
+              },
+              crosshair: {
+                  line: {
+                    color: 'rgba(75, 192, 192, 1)',
+                    width: 1
+                  },
+                  sync: {
+                    enabled: false
+                  },
+                  zoom: {
+                    enabled: false
+                  },
+                  snap: {
+                    enabled: true
+                  }
+                }
+            },
+            elements: {
+                line: {
+                    tension: 0.1
+                },
+                point: {
+                    radius: 0
+                }
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 10,
+                    top: 10,
+                    bottom: 10
+                }
+          },
             scales: {
                 x: {
                     display: true,
                     title: {
                         display: true,
                         text: 'Date'
+                    },
+                    ticks: {
+                      autoSkip: true,
+                      maxTicksLimit: 10,
+                      maxRotation: 0,
+                      minRotation: 0,
                     }
                 },
                 y: {
