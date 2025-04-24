@@ -1,41 +1,182 @@
 {% load static tailwind_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
     <title>Django Tailwind</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     {% tailwind_css %}
+    {% if show_graph %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0/dist/chartjs-plugin-zoom.min.js"></script>
+    {% endif %}
+    {% if show_graph %}
+    {% endif %}
   </head>
 
   <body class="bg-gray-50 font-serif leading-normal tracking-normal">
-   {% include "home/navbar.html" %}
+    {% include "home/navbar.html" %}
    
     <!-- Page content -->
-    <div class="container mx-auto">
-        <section class="flex items-center justify-center h-screen">
+    <div class="container mx-auto p-4 pt-20">
+        <!-- Form -->
+        <section class="py-8">
             <form method="post" action="{% url 'index' %}" class="text-center space-y-4">
                 {% csrf_token %}
                 <label class="block text-xl font-semibold" for="symbol">Enter the index:</label>
-                <input type="text" name="symbol" id="symbol" placeholder="ex: ^FCHI" value="{{ request.POST.symbol|default:'' }}" class="p-2 border rounded w-1/2">
+                <input type="text" name="symbol" id="symbol" placeholder="ex: ^FCHI" value="{{ symbol|default:'' }}" class="p-2 border rounded w-1/2">
                 <br>
                 <div class="flex justify-center space-x-2 items-center">
                     <label for="period">Period:</label>
-                    <input type="number" name="period" id="period" min="1" placeholder="ex: 30" class="p-2 border rounded w-24">
+                    <input type="number" name="period" id="period" min="1" placeholder="ex: 30" value="{{ period|default:'' }}" class="p-2 border rounded w-24">
                     <select name="period_unit" id="period_unit" class="p-2 border rounded">
-                        <option value="days">Days</option>
-                        <option value="hours">Hours</option>
-                        <option value="minutes">Minutes</option>
+                        <option value="days" {% if period_unit == 'days' %}selected{% endif %}>Days</option>
+                        <option value="hours" {% if period_unit == 'hours' %}selected{% endif %}>Hours</option>
+                        <option value="minutes" {% if period_unit == 'minutes' %}selected{% endif %}>Minutes</option>
                     </select>
                 </div>
                 <br>
                 <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Display</button>
             </form>
+            
+            {% if error %}
+            <div class="mt-4 text-center text-red-500">{{ error }}</div>
+            {% endif %}
         </section>
+        
+        {% if show_graph %}
+        <section class="mt-8">
+            <div class="bg-white rounded-lg shadow-lg p-6 mx-auto max-w-6xl">
+                <h1 class="text-2xl font-bold text-center my-4">{{ company_name }} - Last {{ period }} {{ period_unit }}</h1>
+                <p class="text-center text-gray-600">
+                    Currency : {{ currency }} | Time Zone : {{ timezone }}
+                </p>
+                <div class="flex items-center justify-center">
+                    <canvas id="stockChart" width="800" height="400"></canvas>
+                </div>
+            </div>
+            
+        </section>
+        
+        <script>
+            const chartData = JSON.parse('{{ chart_data|escapejs }}');
+
+            const ctx = document.getElementById('stockChart').getContext('2d');
+            const stockChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.dates,
+                    datasets: [{
+                        label: '{{ symbol }} - Price',
+                        data: chartData.prices,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                    mode: 'index',
+                    intersect: false,
+                  },
+                    plugins: {
+                      zoom: {
+                        zoom: {
+                            wheel: {
+                                enabled: true,
+                                modifierKey: 'ctrl'
+                            },
+                            pinch: {
+                                enabled: true
+                            },
+                            mode: 'xy',
+                            speed: 0.1
+                        },
+                        pan: {
+                            enabled: true,
+                            mode: 'xy',
+                            speed: 10,
+                        },
+                        limits: {
+                            x: {
+                                min: 0,
+                                max: chartData.dates.length - 1
+                            },
+                            y: {
+                                min: Math.min(...chartData.prices),
+                                max: Math.max(...chartData.prices)
+                            }
+                        }
+                      },
+                      tooltip: {
+                          enabled: true,
+                          mode: 'index',
+                          intersect: false,
+                          position: 'nearest'
+                      },
+                      crosshair: {
+                          line: {
+                            color: 'rgba(75, 192, 192, 1)',
+                            width: 1
+                          },
+                          sync: {
+                            enabled: false
+                          },
+                          zoom: {
+                            enabled: false
+                          },
+                          snap: {
+                            enabled: true
+                          }
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.1
+                        },
+                        point: {
+                            radius: 0
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            left: 10,
+                            right: 10,
+                            top: 10,
+                            bottom: 10
+                        }
+                  },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            },
+                            ticks: {
+                              autoSkip: true,
+                              maxTicksLimit: 10,
+                              maxRotation: 0,
+                              minRotation: 0,
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Price'
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+        {% endif %}
     </div>
-
-    
-
   </body>
 </html>

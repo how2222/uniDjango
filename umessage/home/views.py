@@ -1,91 +1,79 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
+import pytz
 import yfinance as yf
 import datetime
 import json
 
 def index(request):
+    context = {}
+    
     if request.method == 'POST':
         symbol = request.POST.get('symbol')
         period = request.POST.get('period', '30')
         period_unit = request.POST.get('period_unit', 'days')
         
         if symbol:
-            return redirect(f'/graph/?symbol={symbol}&period={period}&period_unit={period_unit}')
-        else:
-            return render(request, 'home/index.html', {'error': 'Veuillez entrer un symbole.'})
-
-    return render(request, 'home/index.html')
-def graph(request):
-    symbol = request.GET.get('symbol')
-    period = request.GET.get('period')
-    period_unit = request.GET.get('period_unit', 'days')
-    
-    print(f"Symbol reçu: {symbol}, Période: {period} {period_unit}")
-    error = None
-    
-    if symbol:
-        try:
-            period_value = int(period)
-            
-            end_date = datetime.datetime.now()
-            
-            if period_unit == 'hours':
-                start_date = end_date - datetime.timedelta(hours=period_value)
-                interval = '1h'
-            if period_unit == 'minutes':
-                start_date = end_date - datetime.timedelta(minutes=period_value)
-                interval = '1m'
-            elif period_unit == 'days':
-                start_date = end_date - datetime.timedelta(days=period_value)
-                interval = '1d'            
-            
-            data = yf.download(symbol, start=start_date, end=end_date, interval=interval)
-            ticker = yf.Ticker(symbol)
-            currency = ticker.info.get('currency', 'N/A')
-            timezone = ticker.info.get('exchangeTimezoneName', 'N/A')
-            company_name = ticker.info.get('longName', symbol)
-
-
-            print("Données vides?", data.empty)
-            
-            if not data.empty and 'Close' in data.columns:
-                if interval =='1m':
-                    date_format = '%Y-%m-%d %H:%M:%S'
-                elif interval == '1h':
-                    date_format = '%Y-%m-%d %H:%M'
+            try:
+                ticker = yf.Ticker(symbol)
+                timezone = ticker.info.get('exchangeTimezoneName', 'N/A')
+                if timezone != 'N/A':
+                    exchange_tz = pytz.timezone(timezone)
                 else:
-                    date_format = '%Y-%m-%d'
+                    exchange_tz = pytz.timezone('US/Eastern')
+
+                period_value = int(period)
                 
-                chart_data = {
-                    'dates': data.index.strftime(date_format).tolist(),
-                    'prices': [prices[0] for prices in data['Close'].values.tolist()]
-                }
-                print("Données de graphique:", chart_data)
-                context = {
-                    'chart_data': json.dumps(chart_data),
-                    'symbol': symbol,
-                    'period': period,
-                    'period_unit': period_unit,
-                    'currency': currency,
-                    'timezone': timezone,
-                    'company_name': company_name
-                }
-                print("Rendu de graph.html avec symbole:", symbol)
-                return render(request, 'home/graph.html', context)
-            else:
-                error = f"Aucune donnée trouvée pour le symbole '{symbol}'."
-                print("Pas de données:", error)
-        except Exception as e:
-            error = f"Erreur lors de la récupération des données : {str(e)}"
-            print("Exception:", error)
+                end_date = datetime.datetime.now(exchange_tz)
+                
+                if period_unit == 'hours':
+                    start_date = end_date - datetime.timedelta(hours=period_value)
+                    interval = '1h'
+                elif period_unit == 'minutes':
+                    start_date = end_date - datetime.timedelta(minutes=period_value)
+                    interval = '1m'
+                else:
+                    start_date = end_date - datetime.timedelta(days=period_value)
+                    interval = '1d'            
+                
+                data = yf.download(symbol, start=start_date, end=end_date, interval=interval)
+
+                currency = ticker.info.get('currency', 'N/A')
+                company_name = ticker.info.get('longName', symbol)
+                
+                if not data.empty and 'Close' in data.columns:
+                    if interval == '1m':
+                        date_format = '%Y-%m-%d %H:%M:%S'
+                    elif interval == '1h':
+                        date_format = '%Y-%m-%d %H:%M'
+                    else:
+                        date_format = '%Y-%m-%d'
+                    
+                    chart_data = {
+                        'dates': data.index.strftime(date_format).tolist(),
+                        'prices': [prices[0] for prices in data['Close'].values.tolist()]
+                    }
+                    
+                    context.update({
+                        'chart_data': json.dumps(chart_data),
+                        'symbol': symbol,
+                        'period': period,
+                        'period_unit': period_unit,
+                        'currency': currency,
+                        'timezone': timezone,
+                        'company_name': company_name,
+                        'show_graph': True
+                    })
+                else:
+                    context['error'] = f"No data for '{symbol}'."
+            except Exception as e:
+                context['error'] = f"error : {str(e)}"
+        else:
+            context['error'] = 'Please enter an index.'
             
-        print("Rendu de index.html avec erreur:", error)
-        return render(request, 'home/index.html', {
-            'error': error, 
+        context.update({
             'symbol': symbol,
             'period': period,
             'period_unit': period_unit
         })
-    else:
-        print("Aucun symbole fourni, redirection vers l'accueil")
-        return redirect('/')
+            
+    return render(request, 'home/index.html', context)
