@@ -41,5 +41,5 @@ pip install yfinance
 
 
 # Project tips
-## Chenge the name of an app
+## Change the name of an app
 ```mv past_name new_name```

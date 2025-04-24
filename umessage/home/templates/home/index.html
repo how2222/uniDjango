@@ -15,15 +15,26 @@
     <!-- Page content -->
     <div class="container mx-auto">
         <section class="flex items-center justify-center h-screen">
-            <form method="post" class="text-center space-y-4">
+            <form method="post" action="{% url 'index' %}" class="text-center space-y-4">
                 {% csrf_token %}
                 <label class="block text-xl font-semibold" for="symbol">Enter the index:</label>
-                <input type="text" name="symbol" id="symbol" placeholder="ex: ^FCHI" class="p-2 border rounded w-1/2">
+                <input type="text" name="symbol" id="symbol" placeholder="ex: ^FCHI" value="{{ request.POST.symbol|default:'' }}" class="p-2 border rounded w-1/2">
+                <br>
+                <div class="flex justify-center space-x-2 items-center">
+                    <label for="period">Period:</label>
+                    <input type="number" name="period" id="period" min="1" value="30" class="p-2 border rounded w-24">
+                    <select name="period_unit" id="period_unit" class="p-2 border rounded">
+                        <option value="days">Days</option>
+                        <option value="hours">Hours</option>
+                    </select>
+                </div>
                 <br>
                 <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Display</button>
             </form>
         </section>
     </div>
+
+    
 
   </body>
 </html>
