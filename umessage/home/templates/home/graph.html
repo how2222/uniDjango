@@ -64,7 +64,18 @@
                     enabled: true,
                     mode: 'xy',
                     speed: 10,
+                },
+                limits: {
+                    x: {
+                        min: 0,
+                        max: chartData.dates.length - 1
+                    },
+                    y: {
+                        min: Math.min(...chartData.prices),
+                        max: Math.max(...chartData.prices)
+                    }
                 }
+                
             },
               tooltip: {
                   enabled: true,
