@@ -1,4 +1,5 @@
 {% load static tailwind_tags %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="fr">
   <head>
@@ -11,7 +12,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.0/dist/chartjs-plugin-zoom.min.js"></script>
+    <script src="{% static 'home/js/stock_chart.js' %}"></script>
     {% endif %}
+    <script src="{% static 'home/js/search_form_toggle.js' %}"></script>
+    
   </head>
 
   <body class="bg-gray-50 font-serif leading-normal tracking-normal">
@@ -47,6 +51,7 @@
             </div>
         </section>
         
+        <!-- Graph -->
         {% if show_graph %}
         <section class="mt-8">
             <div class="bg-white rounded-lg shadow-lg p-6 mx-auto max-w-6xl">
@@ -63,154 +68,14 @@
         </section>
         
         <script>
-            const chartData = JSON.parse('{{ chart_data|escapejs }}');
-
-            const ctx = document.getElementById('stockChart').getContext('2d');
-            const stockChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: chartData.dates,
-                    datasets: [{
-                        label: '{{ symbol }} - Price',
-                        data: chartData.prices,
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 2,
-                        fill: false,
-                        tension: 0.1,
-                        pointRadius: 0,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                    mode: 'index',
-                    intersect: false,
-                  },
-                    plugins: {
-                      zoom: {
-                        zoom: {
-                            wheel: {
-                                enabled: true,
-                                modifierKey: 'ctrl'
-                            },
-                            pinch: {
-                                enabled: true
-                            },
-                            mode: 'xy',
-                            speed: 0.1
-                        },
-                        pan: {
-                            enabled: true,
-                            mode: 'xy',
-                            speed: 10,
-                        },
-                        limits: {
-                            x: {
-                                min: 0,
-                                max: chartData.dates.length - 1
-                            },
-                            y: {
-                                min: Math.min(...chartData.prices),
-                                max: Math.max(...chartData.prices)
-                            }
-                        }
-                      },
-                      tooltip: {
-                          enabled: true,
-                          mode: 'index',
-                          intersect: false,
-                          position: 'nearest'
-                      },
-                      crosshair: {
-                          line: {
-                            color: 'rgba(75, 192, 192, 1)',
-                            width: 1
-                          },
-                          sync: {
-                            enabled: false
-                          },
-                          zoom: {
-                            enabled: false
-                          },
-                          snap: {
-                            enabled: true
-                          }
-                        }
-                    },
-                    elements: {
-                        line: {
-                            tension: 0.1
-                        },
-                        point: {
-                            radius: 0
-                        }
-                    },
-                    layout: {
-                        padding: {
-                            left: 10,
-                            right: 10,
-                            top: 10,
-                            bottom: 10
-                        }
-                  },
-                    scales: {
-                        x: {
-                            display: true,
-                            title: {
-                                display: true,
-                                text: 'Date'
-                            },
-                            ticks: {
-                              autoSkip: true,
-                              maxTicksLimit: 10,
-                              maxRotation: 0,
-                              minRotation: 0,
-                            }
-                        },
-                        y: {
-                            display: true,
-                            title: {
-                                display: true,
-                                text: 'Price'
-                            }
-                        }
-                    }
-                }
-            });
+            window.chartData = JSON.parse('{{ chart_data|escapejs }}');
+            window.chartSymbol = '{{ symbol }}';
         </script>
+        
+
+     
         {% endif %}
     </div>
-    
-    <!-- Script for toggling the search form -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchButton = document.getElementById('searchButton');
-            const searchFormSection = document.getElementById('searchFormSection');
-            const submitButton = document.getElementById('submitButton');
-            
-            if (searchButton && searchFormSection) {
-                searchButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    searchFormSection.classList.toggle('hidden');
-                    
-                    setTimeout(() => {
-                        searchFormSection.classList.toggle('opacity-0');
-                    }, 10);
-                    
-                    if (!searchFormSection.classList.contains('hidden')) {
-                        const symbolInput = document.getElementById('symbol');
-                        if (symbolInput) {
-                            symbolInput.focus();
-                        }
-                        searchFormSection.scrollIntoView({ behavior: 'smooth' });
-                    }
-                });
-            }
-        });
-
-
-    </script>
+        
   </body>
 </html>
